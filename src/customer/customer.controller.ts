@@ -7,7 +7,7 @@ import { AuthGuard } from '../auth.guard';
 @Controller()
 export class CustomerController {
     constructor(@Inject(CustomerService) private readonly customerService: CustomerService) { }
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @GrpcMethod('AuthService', 'customerRegister')
     async customerRegister(payload: CustomerRegisterInput, metadata: any): Promise<CustomerRegisterResponse> {
         const {code, message, result } = await this.customerService.createCustomer(payload);

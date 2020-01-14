@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { NestCloud } from '@nestcloud/core';
-import {IsEmail, IsPhoneNumber} from 'class-validator';
+import { IsEmail, IsPhoneNumber, validateOrReject, IsNotEmpty } from 'class-validator';
 
 @Entity()
 export class Customer {
@@ -26,20 +26,24 @@ export class Customer {
             this.companyName = params.companyName;
         }
     }
+
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
     @Column({ length: 50, unique: true })
-    @IsEmail()
+    @IsEmail({}, {message: 'INCORRECT_EMAIL_ADDRESS'})
     email: string;
 
     @Column('varchar', { length: 100, nullable: true })
+    @IsNotEmpty({message: 'INCORRECT PASSWORD'})
     password: string | undefined;
 
     @Column('varchar', { length: 20 })
-    @IsPhoneNumber('VN')
+    @IsPhoneNumber('VN', {message: 'INCORRECT_PHONE_NUMBER'})
     phoneNumber: string;
 
     @Column('varchar', { length: 100, nullable: true })
+    @IsNotEmpty({message: 'COMPANY_NAME_SHOULD_NOT_BE_EMPTY'})
     companyName: string;
 
     @Column('boolean', { default: false })
@@ -62,18 +66,13 @@ export class Customer {
     public deletedBy: string | undefined;
 
     @BeforeInsert()
+    @BeforeUpdate()
     async hashPassword() {
+        await validateOrReject(this);
         this.password = await bcrypt.hash(
             this.password,
             NestCloud.global.boot.get('bcrypt.salt', 12),
         );
-    }
-
-    @BeforeUpdate()
-    async updatePassword(): Promise<void> {
-        if (this.password) {
-            await this.hashPassword();
-        }
     }
 
     async comparePassword(attempt: string): Promise<boolean> {

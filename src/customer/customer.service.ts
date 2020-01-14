@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from '../entities/customer.entity';
 import { CustomerRegisterInput, CustomerRepositoryResult } from './customer.interface';
 import { CustomerRepository } from '../entities/customer.repository';
+import { isArray } from 'util';
 
 @Injectable()
 export class CustomerService {
@@ -24,8 +25,14 @@ export class CustomerService {
         if (payload.phoneNumber && await this.customerRepository.findOne({ where: { phoneNumber: payload.phoneNumber } })) {
             return { code: 409, message: 'PHONE_NUMBER_ALREADY_EXISTS', result: null };
         }
-        const result = await this.customerRepository.save(this.customerRepository.create(payload));
-        return { code: 200, message: 'CREATE_CUSTOMER_SUCCESSFUL', result };
+        try {
+            const result = await this.customerRepository.save(this.customerRepository.create(payload));
+            return { code: 200, message: 'CREATE_CUSTOMER_SUCCESSFUL', result };
+        } catch (error) {
+            Logger.log(error);
+            return ({ code: 406, message: 'INCORRECT_INPUT', result: null });
+        }
+
     }
     async findCustomerByEmailOrPhone(customerName: string): Promise<CustomerRepositoryResult> {
         const customer = await this.customerRepository.findOne({
