@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package auth_service;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
+import "validate/validate.proto";
+
+service AuthService {
+    rpc userRegister(UserRegisterInput) returns (UserRegisterResponse){}
+    rpc customerRegister(CustomerRegisterInput) returns (CustomerRegisterResponse){}    
+    rpc userLogin(UserLoginInput) returns (UserLoginResponse){}
+    rpc customerLogin(CustomerLoginInput) returns (CustomerLoginResponse){}
+    rpc createEmployee(CreateEmployeeInput) returns (CreateEmployeeResponse){}
+    // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
+}
+
+message Error{
+    int32 errorCode = 1;
+    string errorMessage = 2;
+}
+
+message UserRegisterInput {
+  string password = 1;
+  string phoneNumber = 2;
+}
+
+message UserRegisterResponse {
+  int32 code = 1;
+  string message = 2;
+  Error error = 3;
+}
+
+message CustomerRegisterInput {
+  string email = 1;
+  string password = 2;
+  string phoneNumber = 3;
+  string companyName = 4;
+}
+
+message CustomerRegisterResponse {
+  int32 code = 1;
+  string message = 2;
+  Error error = 3;
+}
+
+message UserLoginInput {
+    string userName = 1;
+    string password = 2;
+}
+
+message UserLoginResponse {
+    string accessToken = 1;
+}
+
+message CustomerLoginInput {
+    string customerName = 1;
+    string password = 2;
+}
+
+message CustomerLoginResponse {
+    string accessToken = 1;
+}
+
+message CreateEmployeeInput {
+  string email = 1;  
+  string phoneNumber = 3;
+  string password = 2;
+}
+
+message CreateEmployeeResponse {
+  int32 code = 1;
+  string message = 2;
+  Error error = 3;
+}

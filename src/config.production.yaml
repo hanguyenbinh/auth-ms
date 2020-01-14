@@ -1,0 +1,22 @@
+consul:
+  host: 192.168.18.200
+  port: 8500
+service:
+  discoveryHost: 192.168.18.200
+  healthCheck:
+    timeout: 1s
+    interval: 10s
+    tcp: ${{ service.discoveryHost }}:${{ service.port }}
+  maxRetry: 5
+  retryInterval: 5000
+  name: CustomerService
+  port: 50050
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  database: auth_ms
+  synchronize: false
+bcrypt:
+  salt: 12
