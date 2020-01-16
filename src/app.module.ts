@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -15,10 +15,14 @@ import {
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Config from './config';
+import * as redisStore from 'cache-manager-redis-store';
+
 import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER } from '@nestcloud/common';
 import { UserModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
 import { EmployeeModule } from './employee/employee.module';
+import { RoleModule } from './role/role.module';
+import { PermissionModule } from './permission/permission.module';
 
 const getTerminusOptions = (
   db: TypeOrmHealthIndicator,
@@ -45,6 +49,16 @@ const getTerminusOptions = (
       inject: [TypeOrmHealthIndicator],
       useFactory: db => getTerminusOptions(db as TypeOrmHealthIndicator),
     }),
+    CacheModule.registerAsync({
+      useFactory: (config: Boot) => ({
+        store: redisStore,
+        host: config.get('redis.host', 'localhost'),
+        port: config.get('redis.port', 6379),
+        auth_pass: config.get('redis.auth_pass', ''),
+        ttl: config.get('redis.ttl', 5),
+      }),
+      inject: [NEST_BOOT_PROVIDER],
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: (config: Boot) => ({
         type: 'postgres',
@@ -60,11 +74,23 @@ const getTerminusOptions = (
           1000,
         ),
         logging: 'all',
+        cache: {
+          type: 'redis',
+          options: {
+            host: config.get('redis.host', 'localhost'),
+            port: config.get('redis.port', 6379),
+            password: config.get('redis.auth_pass', ''),
+            prefix: config.get('redis.prefix', ''),
+          },
+          duration: config.get('redis.cache_duration', 10),
+        },
       }),
       inject: [NEST_BOOT_PROVIDER],
     }),
+    RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

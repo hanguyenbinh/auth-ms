@@ -1,0 +1,11 @@
+version: '3'
+services:  
+  redis:
+    build:
+        context: .
+    image: redis:alpine
+    restart: unless-stopped
+    ports:
+        - "6379:6379"
+    volumes:
+      - .:/usr/local/etc/redis
