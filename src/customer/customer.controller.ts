@@ -11,8 +11,8 @@ export class CustomerController {
 
     @UseInterceptors(CacheInterceptor)
     @GrpcMethod('AuthService', 'customerRegister')
-    @UseGuards(AuthGuard)
-    @Roles('any')
+    // @UseGuards(AuthGuard)
+    // @Roles('any')
     async customerRegister(payload: CustomerRegisterInput, metadata: any): Promise<CustomerRegisterResponse> {
         const { code, message, result } = await this.customerService.createCustomer(payload);
         return { code, message, result, error: null };

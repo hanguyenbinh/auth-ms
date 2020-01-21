@@ -31,14 +31,19 @@ export class AuthService {
         if (!await bcrypt.compare(password, result.password)) {
             throw new RpcException({ code: 406, message: 'INVALID_PASSWORD' });
         }
+        result.roles = new Array();
+        result.roles.push('any');
         return result;
     }
     async customerLogin(userName: string, password: string): Promise<any> {
         const customer = await this.validateCustomer(userName, password);
         const tokenString = this.jwtService.sign(customer.toJSON());
-        Logger.log(tokenString);
         return {
-            accessToken: tokenString,
+            code: 200,
+            message: 'LOGIN_SUCCESS',
+            result: {
+                accessToken: tokenString,
+            },
         };
     }
 }

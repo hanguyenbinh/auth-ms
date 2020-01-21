@@ -58,8 +58,13 @@ message CustomerLoginInput {
     string password = 2;
 }
 
+message CustomerLoginResult {
+  string accessToken = 1;
+}
 message CustomerLoginResponse {
-    string accessToken = 1;
+  int32 code = 1;
+  string message = 2;
+  CustomerLoginResult result = 3;
 }
 
 message CreateEmployeeInput {

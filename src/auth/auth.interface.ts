@@ -2,6 +2,11 @@ export interface CustomerLoginInput {
     customerName: string;
     password: string;
 }
-export interface CustomerLoginResponse {
+interface CustomerLoginResult {
     accessToken: string;
+}
+export interface CustomerLoginResponse {
+    code: number;
+    message: string;
+    result: CustomerLoginResult;
 }

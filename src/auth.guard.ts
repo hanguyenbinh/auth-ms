@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/commo
 import { Observable } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
+import { Metadata } from 'grpc';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,38 +14,25 @@ export class AuthGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
+    Logger.log(roles);
     if (!roles) {
       return true;
     }
+    const contextArgs = context.getArgs();
+    const metaData: Metadata = contextArgs[1] as Metadata;
+    const accessToken = metaData.get('authorizations')[0] as string;
+    if (!accessToken) {
+      return false;
+    }
 
-    
-
-    // const httpContext: HttpArgumentsHost =nes context.switchToHttp();
-    console.log(context.getHandler().name);
-    //const data = httpContext
-    return true;
-    // const [data, grpcContext] = this.getDataAndContext(context);
-    // const ctxMap = grpcContext.getMap();
-    // console.log(context.switchToHttp());
-    // //console.log('handler', context.switchToRpc().getContext());
-    // if (ctxMap && ctxMap.authorizations) {
-    //   try {
-    //     const decode = this.jwtService.verify(ctxMap.authorizations);
-    //     Logger.log(decode);
-    //   } catch (error) {
-    //     Logger.log(error);
-    //     return false;
-    //   }
-    //   return true;
-    // } else {
-    //   return false;
-    // }
-    // // console.log(ctxMap)
-    // // console.log("data", data);
-    // // console.log("context.getHandler", context.getHandler());
-    // // console.log("reflector", this.reflector)
-    // // return true;
-
+    try {
+      const user = this.jwtService.verify(accessToken);
+      const hasRole = () => user.roles.some(role => !!roles.find(item => item === role));
+      return user && user.roles && hasRole();
+    } catch (error) {
+      Logger.log(error);
+      return false;
+    }
   }
   getDataAndContext(context: ExecutionContext) {
     return [context.switchToRpc().getData(), context.switchToRpc().getContext()];

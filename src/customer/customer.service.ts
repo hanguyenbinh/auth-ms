@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Customer } from '../entities/customer.entity';
 import { CustomerRegisterInput, CustomerRepositoryResult } from './customer.interface';
 import { CustomerRepository } from '../entities/customer.repository';
-import { isArray } from 'util';
 
 @Injectable()
 export class CustomerService {
@@ -29,8 +28,19 @@ export class CustomerService {
             const result = await this.customerRepository.save(this.customerRepository.create(payload));
             return { code: 200, message: 'CREATE_CUSTOMER_SUCCESSFUL', result };
         } catch (error) {
-            Logger.log(error);
-            return ({ code: 406, message: 'INCORRECT_INPUT', result: null });
+            let message: string = '';
+            if (Array.isArray(error)) {
+                if (error[0].property === 'phoneNumber') {
+                    message = 'INCORRECT_PHONE_NUMBER';
+                } else if (error[0].property === 'email') {
+                    message = 'INCORRECT_EMAIL_ADDRESS';
+                } else {
+                    message = 'INCORRECT_UNKNOWN_PROPERTY';
+                }
+            } else {
+                message = error;
+            }
+            return ({ code: 406, message, result: null });
         }
 
     }
