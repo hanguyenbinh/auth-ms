@@ -10,3 +10,8 @@ export interface CustomerLoginResponse {
     message: string;
     result: CustomerLoginResult;
 }
+
+export interface CustomerGoogleLoginInput {
+    email: string;
+    accessToken: string;
+}

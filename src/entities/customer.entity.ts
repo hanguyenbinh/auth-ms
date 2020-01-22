@@ -31,20 +31,22 @@ export class Customer {
     id: string;
 
     @Column({ length: 50, unique: true })
-    @IsEmail({}, {message: 'INCORRECT_EMAIL_ADDRESS'})
     email: string;
 
     @Column('varchar', { length: 100, nullable: true })
-    @IsNotEmpty({message: 'INCORRECT PASSWORD'})
     password: string | undefined;
 
     @Column('varchar', { length: 20 })
-    @IsPhoneNumber('VN', {message: 'INCORRECT_PHONE_NUMBER'})
     phoneNumber: string;
 
     @Column('varchar', { length: 100, nullable: true })
-    @IsNotEmpty({message: 'COMPANY_NAME_SHOULD_NOT_BE_EMPTY'})
     companyName: string;
+
+    @Column('boolean', { default: false })
+    isGoogleAccount: boolean;
+
+    @Column('boolean', { default: false })
+    isFacebookAccount: boolean;
 
     @Column('boolean', { default: false })
     isBanned: boolean;

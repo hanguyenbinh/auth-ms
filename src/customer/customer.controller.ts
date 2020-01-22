@@ -14,7 +14,11 @@ export class CustomerController {
     // @UseGuards(AuthGuard)
     // @Roles('any')
     async customerRegister(payload: CustomerRegisterInput, metadata: any): Promise<CustomerRegisterResponse> {
-        const { code, message, result } = await this.customerService.createCustomer(payload);
-        return { code, message, result, error: null };
+        try {
+            const newCustomer = await this.customerService.createCustomer(payload);
+            return { result: newCustomer };
+        } catch (error) {
+            return { error };
+        }
     }
 }

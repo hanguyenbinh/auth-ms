@@ -11,6 +11,7 @@ service AuthService {
     rpc customerRegister(CustomerRegisterInput) returns (CustomerRegisterResponse){}    
     rpc userLogin(UserLoginInput) returns (UserLoginResponse){}
     rpc customerLogin(CustomerLoginInput) returns (CustomerLoginResponse){}
+    rpc customerGoogleLogin(CustomerGoogleLoginInput) returns (CustomerLoginResponse){}
     rpc createEmployee(CreateEmployeeInput) returns (CreateEmployeeResponse){}
     // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
 }
@@ -61,6 +62,12 @@ message CustomerLoginInput {
 message CustomerLoginResult {
   string accessToken = 1;
 }
+
+message CustomerGoogleLoginInput {
+    string email = 1;
+    string accessToken = 2;    
+}
+
 message CustomerLoginResponse {
   int32 code = 1;
   string message = 2;

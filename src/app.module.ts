@@ -17,12 +17,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Config from './config';
 import * as redisStore from 'cache-manager-redis-store';
 
-import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER, NEST_LOADBALANCE } from '@nestcloud/common';
 import { UserModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
 import { EmployeeModule } from './employee/employee.module';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
+import { HttpModule } from '@nestcloud/http';
 
 const getTerminusOptions = (
   db: TypeOrmHealthIndicator,
@@ -41,7 +42,7 @@ const getTerminusOptions = (
   imports: [
     AuthModule,
     LoggerModule.register(),
-    BootModule.register(__dirname, Config.filename),
+    BootModule.register(Config.context, Config.filename),
     ConsulModule.register({ dependencies: [NEST_BOOT] }),
     ServiceModule.register({ dependencies: [NEST_BOOT, NEST_CONSUL] }),
     LoadbalanceModule.register({ dependencies: [NEST_BOOT] }),
@@ -49,6 +50,7 @@ const getTerminusOptions = (
       inject: [TypeOrmHealthIndicator],
       useFactory: db => getTerminusOptions(db as TypeOrmHealthIndicator),
     }),
+    // HttpModule.register({ dependencies: [NEST_BOOT, NEST_LOADBALANCE] }),
     CacheModule.registerAsync({
       useFactory: (config: Boot) => ({
         store: redisStore,

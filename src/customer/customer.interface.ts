@@ -4,11 +4,17 @@ export interface CustomerRegisterInput {
     phoneNumber: string;
     companyName: string;
 }
+export interface CustomerGoogleRegisterInput {
+    email: string;
+    password: string;
+    phoneNumber: string;
+    companyName: string;
+    isGoogleAccount: boolean;
+}
+
 export interface CustomerRegisterResponse {
-    code: number;
-    message: string;
-    error: any;
-    result: any;
+    error?: any;
+    result?: any;
 }
 export interface CustomerRepositoryResult {
     code: number;

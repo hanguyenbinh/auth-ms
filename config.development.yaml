@@ -11,6 +11,9 @@ service:
   retryInterval: 5000
   name: AuthService
   port: 50050
+http:
+  axios:
+    timeout: 1000
 database:
   host: localhost
   port: 5432
@@ -28,6 +31,10 @@ google:
   scope:
     - profile
     - email
+  defaultPassword: abc123
+  defaultPhoneNumber: 0901234567
+  defaultCompanyName: unknown
+  checkTokenUrl: https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=
 logger:
   level: debug
   transports:
