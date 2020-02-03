@@ -22,3 +22,7 @@ export interface FacebookLoginInput {
     email: string;
     token: string;
 }
+
+export interface CheckTokenInput {
+    accessToken: string;
+}

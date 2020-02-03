@@ -10,7 +10,8 @@ import { InjectBoot, Boot } from '@nestcloud/boot';
 import { GoogleTokenInfo } from 'src/common/interfaces/google.interface';
 import { Manager } from 'src/entities/manager.entity';
 import { FacebookTokenInfo } from 'src/common/interfaces/facebook.interface';
-import { FacebookLoginInput } from './auth.interface';
+import { FacebookLoginInput, CheckTokenInput } from './auth.interface';
+
 
 
 @Injectable()
@@ -156,5 +157,29 @@ export class AuthService {
         return {
             accessToken: tokenString,
         };
+    }
+
+    async managerCheckToken(payload: CheckTokenInput): Promise<any> {
+        try {
+            const user = this.jwtService.verify(payload.accessToken);
+            if (user && user.id) {
+                const result = await this.managerService.find([
+                    { id: user.id },
+                ]);
+                if (result) {
+                    return {
+                        accessToken: payload.accessToken,
+                    };
+
+                }
+            }
+            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN' });
+        }
+        catch (error) {
+            console.log(error);
+            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN' });
+
+        }
+
     }
 }

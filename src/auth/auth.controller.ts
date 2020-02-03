@@ -1,7 +1,8 @@
 import { Controller, Inject } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput } from './auth.interface';
+import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput, CheckTokenInput } from './auth.interface';
+
 
 @Controller()
 export class AuthController {
@@ -21,5 +22,10 @@ export class AuthController {
     @GrpcMethod('AuthService', 'managerFacebookLogin')
     async managerFacebookLogin(payload: FacebookLoginInput): Promise<any> {
         return await this.authService.managerFacebookLogin(payload);
+    }
+
+    @GrpcMethod('AuthService', 'managerCheckToken')
+    async managerCheckToken(payload: CheckTokenInput): Promise<any> {
+        return await this.authService.managerCheckToken(payload);
     }
 }

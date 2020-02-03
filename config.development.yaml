@@ -1,8 +1,8 @@
 consul:
-  host: 192.168.89.4
+  host: 192.168.128.200
   port: 8500
 service:
-  discoveryHost: 192.168.89.4
+  discoveryHost: 192.168.128.200
   healthCheck:
     timeout: 1s
     interval: 10s

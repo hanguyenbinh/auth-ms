@@ -13,6 +13,7 @@ service AuthService {
     rpc managerLogin(ManagerLoginInput) returns (ManagerLoginResponse){}
     rpc managerGoogleLogin(GoogleLoginInput) returns (ManagerLoginResponse){}
     rpc managerFacebookLogin(FacebookLoginInput) returns (ManagerLoginResponse){}
+    rpc managerCheckToken(CheckTokenInput) returns (ManagerLoginResponse){}
     rpc createEmployee(CreateEmployeeInput) returns (CreateEmployeeResponse){}
     // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
 }
@@ -20,6 +21,14 @@ service AuthService {
 message Error{
     int32 errorCode = 1;
     string errorMessage = 2;
+}
+
+message CheckTokenInput {
+  string accessToken = 1;
+}
+
+message CheckTokenResponse {
+  string accessToken = 1;
 }
 
 message UserRegisterInput {

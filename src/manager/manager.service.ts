@@ -94,4 +94,9 @@ export class ManagerService {
         });
         return manager;
     }
+    async find(conditions: any): Promise<any>{
+        const manager = await this.managerRepository.find({where: conditions});
+        console.log('find', manager);
+        return manager;
+    }
 }
