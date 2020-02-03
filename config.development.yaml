@@ -1,8 +1,8 @@
 consul:
-  host: 192.168.18.200
+  host: 192.168.89.4
   port: 8500
 service:
-  discoveryHost: 192.168.18.200
+  discoveryHost: 192.168.89.4
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -35,6 +35,10 @@ google:
   defaultPhoneNumber: 0901234567
   defaultCompanyName: unknown
   checkTokenUrl: https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=
+facebook:
+  appID: 181575936387690
+  appSerect: 7dd046f2e3c49b4a34bb889933809530
+  checkTokenUrl: https://graph.facebook.com/${id}/?access_token=${token}
 logger:
   level: debug
   transports:

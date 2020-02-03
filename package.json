@@ -27,7 +27,7 @@
     "@nestcloud/consul": "^0.6.11",
     "@nestcloud/core": "^0.6.11",
     "@nestcloud/feign": "^0.6.11",
-    "@nestcloud/grpc": "^0.6.11",    
+    "@nestcloud/grpc": "^0.6.11",
     "@nestcloud/loadbalance": "^0.6.11",
     "@nestcloud/logger": "^0.6.11",
     "@nestcloud/service": "^0.6.11",

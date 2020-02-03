@@ -17,13 +17,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Config from './config';
 import * as redisStore from 'cache-manager-redis-store';
 
-import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER, NEST_TYPEORM_LOGGER_PROVIDER, NEST_LOADBALANCE } from '@nestcloud/common';
+import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER } from '@nestcloud/common';
 import { UserModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
 import { EmployeeModule } from './employee/employee.module';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
-import { HttpModule } from '@nestcloud/http';
+import { ManagerModule } from './manager/manager.module';
+
 
 const getTerminusOptions = (
   db: TypeOrmHealthIndicator,

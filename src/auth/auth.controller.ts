@@ -1,20 +1,25 @@
 import { Controller, Inject } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { GrpcMethod } from '@nestjs/microservices';
-import { CustomerLoginInput, CustomerLoginResponse, CustomerGoogleLoginInput } from './auth.interface';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
+import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput } from './auth.interface';
 
 @Controller()
 export class AuthController {
     constructor(
         @Inject(AuthService) private readonly authService: AuthService,
     ) { }
-    @GrpcMethod('AuthService', 'customerLogin')
-    async customerLogin(payload: CustomerLoginInput): Promise<CustomerLoginResponse> {
-        return this.authService.customerLogin(payload.customerName, payload.password);
+    @GrpcMethod('AuthService', 'managerLogin')
+    async managerLogin(payload: ManagerLoginInput): Promise<any> {
+        return await this.authService.managerLogin(payload.email, payload.password);
     }
 
-    @GrpcMethod('AuthService', 'customerGoogleLogin')
-    async customerGoogleLogin(payload: CustomerGoogleLoginInput): Promise<CustomerLoginResponse> {
-        return this.authService.customerGoogleLogin(payload.email, payload.accessToken);
+    @GrpcMethod('AuthService', 'managerGoogleLogin')
+    async managerGoogleLogin(payload: GoogleLoginInput): Promise<any> {
+        return await this.authService.managerGoogleLogin(payload.email, payload.token);
+    }
+
+    @GrpcMethod('AuthService', 'managerFacebookLogin')
+    async managerFacebookLogin(payload: FacebookLoginInput): Promise<any> {
+        return await this.authService.managerFacebookLogin(payload);
     }
 }

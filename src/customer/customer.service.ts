@@ -15,47 +15,47 @@ export class CustomerService {
     ) { }
     async createCustomer(payload: CustomerRegisterInput): Promise<Customer> {
         if (!(payload.email && payload.phoneNumber)) {
-            throw new RpcException( { code: 406, message: 'MAKE_SURE_EMAIL_AND_PHONE_NUMBER_BOTH_EXIST', result: null });
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_EMAIL_AND_PHONE_NUMBER_BOTH_EXIST', result: null });
         }
         if (!(payload.password)) {
             throw new RpcException({ code: 406, message: 'MAKE_SURE_PASSWORD_EXIST', result: null });
         }
         if (payload.email && await this.customerRepository.findOne({ where: { email: payload.email } })) {
-            throw new RpcException( { code: 409, message: 'EMAIL_ALREADY_EXISTS', result: null });
+            throw new RpcException({ code: 409, message: 'EMAIL_ALREADY_EXISTS', result: null });
         }
-        if (payload.phoneNumber && await this.customerRepository.findOne({ where: { phoneNumber: payload.phoneNumber } })) {
-            throw new RpcException( { code: 409, message: 'PHONE_NUMBER_ALREADY_EXISTS', result: null });
-        }
+        // if (payload.phoneNumber && await this.customerRepository.findOne({ where: { phoneNumber: payload.phoneNumber } })) {
+        //     throw new RpcException({ code: 409, message: 'PHONE_NUMBER_ALREADY_EXISTS', result: null });
+        // }
         return await this.customerRepository.save(this.customerRepository.create(payload));
     }
 
     async createCustomerWithGoogleAccount(payload: CustomerGoogleRegisterInput): Promise<Customer> {
         if (!(payload.email && payload.phoneNumber)) {
-            throw new RpcException( { code: 406, message: 'MAKE_SURE_EMAIL_AND_PHONE_NUMBER_BOTH_EXIST', result: null });
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_EMAIL_AND_PHONE_NUMBER_BOTH_EXIST', result: null });
         }
         if (!(payload.password)) {
             throw new RpcException({ code: 406, message: 'MAKE_SURE_PASSWORD_EXIST', result: null });
         }
         if (payload.email && await this.customerRepository.findOne({ where: { email: payload.email } })) {
-            throw new RpcException( { code: 409, message: 'EMAIL_ALREADY_EXISTS', result: null });
+            throw new RpcException({ code: 409, message: 'EMAIL_ALREADY_EXISTS', result: null });
         }
-        if (payload.phoneNumber && await this.customerRepository.findOne({ where: { phoneNumber: payload.phoneNumber } })) {
-            throw new RpcException( { code: 409, message: 'PHONE_NUMBER_ALREADY_EXISTS', result: null });
-        }
+        // if (payload.phoneNumber && await this.customerRepository.findOne({ where: { phoneNumber: payload.phoneNumber } })) {
+        //     throw new RpcException({ code: 409, message: 'PHONE_NUMBER_ALREADY_EXISTS', result: null });
+        // }
         payload.isGoogleAccount = true;
         return await this.customerRepository.save(this.customerRepository.create(payload));
     }
-    async findCustomerByEmailOrPhone(customerName: string): Promise<CustomerRepositoryResult> {
+    async findCustomerByEmailOrPhone(email: string): Promise<CustomerRepositoryResult> {
         const customer = await this.customerRepository.findOne({
             where: [
-                { email: customerName },
-                { phoneNumber: customerName },
+                { email: email },
+                { phoneNumber: email },
             ],
         });
         if (customer) {
-            return { code: 200, message: 'CUSTOMER_FOUND', result: customer };
+            return { code: 200, message: 'MANAGER_FOUND', result: customer };
         } else {
-            return { code: 200, message: 'CUSTOMER_NOT_FOUND', result: customer };
+            return { code: 200, message: 'MANAGER_NOT_FOUND', result: customer };
         }
     }
 
@@ -64,6 +64,15 @@ export class CustomerService {
             where: [
                 { email },
                 { isGoogleAccount: true },
+            ],
+        });
+        return customer;
+    }
+    async findCustomerByFacebookAccount(email: string): Promise<any> {
+        const customer = await this.customerRepository.findOne({
+            where: [
+                { email },
+                { isFacebookAccount: true },
             ],
         });
         return customer;

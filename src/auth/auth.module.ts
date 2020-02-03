@@ -6,9 +6,11 @@ import { EmployeeModule } from '../employee/employee.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfig } from '../jwt/jwtConfig.class';
 import { AuthController } from './auth.controller';
+import { ManagerModule } from 'src/manager/manager.module';
 
 @Module({
   imports: [
+    ManagerModule,
     CustomerModule,
     UserModule,
     EmployeeModule,

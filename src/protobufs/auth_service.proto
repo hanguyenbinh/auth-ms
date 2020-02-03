@@ -8,10 +8,11 @@ import "validate/validate.proto";
 
 service AuthService {
     rpc userRegister(UserRegisterInput) returns (UserRegisterResponse){}
-    rpc customerRegister(CustomerRegisterInput) returns (CustomerRegisterResponse){}    
+    rpc managerRegister(ManagerRegisterInput) returns (ManagerRegisterResponse){}    
     rpc userLogin(UserLoginInput) returns (UserLoginResponse){}
-    rpc customerLogin(CustomerLoginInput) returns (CustomerLoginResponse){}
-    rpc customerGoogleLogin(CustomerGoogleLoginInput) returns (CustomerLoginResponse){}
+    rpc managerLogin(ManagerLoginInput) returns (ManagerLoginResponse){}
+    rpc managerGoogleLogin(GoogleLoginInput) returns (ManagerLoginResponse){}
+    rpc managerFacebookLogin(FacebookLoginInput) returns (ManagerLoginResponse){}
     rpc createEmployee(CreateEmployeeInput) returns (CreateEmployeeResponse){}
     // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
 }
@@ -32,14 +33,14 @@ message UserRegisterResponse {
   Error error = 3;
 }
 
-message CustomerRegisterInput {
+message ManagerRegisterInput {
   string email = 1;
   string password = 2;
   string phoneNumber = 3;
   string companyName = 4;
 }
 
-message CustomerRegisterResponse {
+message ManagerRegisterResponse {
   int32 code = 1;
   string message = 2;
   Error error = 3;
@@ -54,24 +55,30 @@ message UserLoginResponse {
     string accessToken = 1;
 }
 
-message CustomerLoginInput {
-    string customerName = 1;
+message ManagerLoginInput {
+    string email = 1;
     string password = 2;
 }
 
-message CustomerLoginResult {
+message ManagerLoginResult {
   string accessToken = 1;
 }
 
-message CustomerGoogleLoginInput {
+message GoogleLoginInput {
     string email = 1;
-    string accessToken = 2;    
+    string token = 2;    
 }
 
-message CustomerLoginResponse {
-  int32 code = 1;
-  string message = 2;
-  CustomerLoginResult result = 3;
+message FacebookLoginInput {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string token = 4;
+    
+}
+
+message ManagerLoginResponse {
+  string accessToken = 1;
 }
 
 message CreateEmployeeInput {

@@ -1,17 +1,24 @@
-export interface CustomerLoginInput {
-    customerName: string;
+export interface ManagerLoginInput {
+    email: string;
     password: string;
 }
-interface CustomerLoginResult {
+interface ManagerLoginResult {
     accessToken: string;
 }
-export interface CustomerLoginResponse {
-    code: number;
-    message: string;
-    result: CustomerLoginResult;
+export interface ManagerLoginResponse {
+    code?: number;
+    message?: string;
+    result?: ManagerLoginResult;
 }
 
-export interface CustomerGoogleLoginInput {
+export interface GoogleLoginInput {
     email: string;
-    accessToken: string;
+    token: string;
+}
+
+export interface FacebookLoginInput {
+    id: string;
+    name: string;
+    email: string;
+    token: string;
 }
