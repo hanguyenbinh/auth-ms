@@ -1,8 +1,8 @@
 consul:
-  host: 192.168.128.200
+  host: 157.245.187.72
   port: 8500
 service:
-  discoveryHost: 192.168.128.200
+  discoveryHost: 157.245.187.72
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -15,7 +15,7 @@ http:
   axios:
     timeout: 1000
 database:
-  host: localhost
+  host: 157.245.187.72
   port: 5432
   user: postgres
   password: postgres
@@ -134,7 +134,7 @@ jwt:
 redis:
   prefix: auth_ms
   auth_pass: cinnolab@@123
-  host: localhost
+  host: 157.245.187.72
   port: 6379
   ttl: 5
   cache_duration: 10

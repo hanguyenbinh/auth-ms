@@ -1,4 +1,4 @@
-CREATE DATABASE "customer_ms"
+CREATE DATABASE "auth_ms"
     WITH OWNER "postgres"
     ENCODING 'UTF8'
     LC_COLLATE = 'en_US.UTF-8'
