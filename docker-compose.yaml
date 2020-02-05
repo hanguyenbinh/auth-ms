@@ -26,8 +26,7 @@ services:
             - microservices
     redis:
         image: 'bitnami/redis:latest'
-        environment:
-            - REDIS_PASSWORD=cinnolab@@123    
+        command: redis-server --requirepass cinnolab@@123        
         restart: always
         ports:
             - 6379:6379
