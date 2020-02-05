@@ -25,18 +25,16 @@ services:
         networks:
             - microservices
     redis:
-        image: redis:4.0.5-alpine
-        command: ["redis-server", "--appendonly", "yes"]        
-        networks:
-            - microservices
-        volumes:
-            - redis-data:/data
+        image: 'bitnami/redis:latest'
+        environment:
+            - REDIS_PASSWORD=cinnolab@@123    
+        restart: always
         ports:
             - 6379:6379
+        volumes:
+            - .:/usr/local/etc/redis    
 volumes:
     postgresql_data:
-        driver: local
-    redis-data:
         driver: local
 networks:
     microservices:
