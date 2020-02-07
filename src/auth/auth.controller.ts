@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput, CheckTokenInput } from './auth.interface';
 
-
 @Controller()
 export class AuthController {
     constructor(

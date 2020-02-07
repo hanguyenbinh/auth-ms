@@ -9,14 +9,9 @@ import { Roles } from '../common/decorators/role.decorator';
 export class ManagerController {
     constructor(@Inject(ManagerService) private readonly managerService: ManagerService) { }
 
-    @UseInterceptors(CacheInterceptor)
+    // @UseInterceptors(CacheInterceptor)
     @GrpcMethod('AuthService', 'managerRegister')
     async managerRegister(payload: ManagerRegisterInput, metadata: any): Promise<ManagerRegisterResponse> {
-        try {
-            const newManager = await this.managerService.createManager(payload);
-            return { result: newManager };
-        } catch (error) {
-            return { error };
-        }
+        return await this.managerService.createManager(payload);
     }
 }

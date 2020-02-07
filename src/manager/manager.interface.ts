@@ -21,8 +21,10 @@ export interface ManagerFacebookRegisterInput {
 }
 
 export interface ManagerRegisterResponse {
-    error?: any;
-    result?: any;
+    id: string;
+    email: string;
+    phoneNumber: string;
+    companyName: string;
 }
 export interface ManagerRepositoryResult {
     code: number;

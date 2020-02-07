@@ -50,9 +50,10 @@ message ManagerRegisterInput {
 }
 
 message ManagerRegisterResponse {
-  int32 code = 1;
-  string message = 2;
-  Error error = 3;
+  string id = 1;
+  string email = 2;
+  string phoneNumber = 3;
+  string companyName = 4;
 }
 
 message UserLoginInput {
