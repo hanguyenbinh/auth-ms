@@ -1,8 +1,8 @@
 consul:
-  host: 192.168.128.200
+  host: dev2.bookoke.com
   port: 8500
 service:
-  discoveryHost: 192.168.128.200
+  discoveryHost: ${{DISCOVERY_HOST}}
   healthCheck:
     timeout: 1s
     interval: 10s
@@ -15,7 +15,7 @@ http:
   axios:
     timeout: 1000
 database:
-  host: 192.168.128.200
+  host: ${{DATABASE_HOST}}
   port: 5432
   user: postgres
   password: postgres
@@ -42,7 +42,7 @@ facebook:
 logger:
   level: debug
   transports:
-    - transport: console      
+    - transport: console
       colorize: false
       datePattern: YYYY-MM-DD h:mm:ss
       label: auth-service
@@ -66,7 +66,7 @@ logger:
       maxsize: 209715200
       maxFiles: 10
 jwt:
-  private: '-----BEGIN RSA PRIVATE KEY-----
+  private: "-----BEGIN RSA PRIVATE KEY-----
     MIIJKQIBAAKCAgEAwCQWeuCEEzwhhfjobHlzgSguBlN7St9E3amFov7TgEApNQzi
     7iNRVFB6IVhhLD0fMg+/19vAloJpxF3nRZDyfFX2Fa4Vhk6bCYT060/d9nyIt0FO
     qLpQNPf5F4vUSBEDcRNeUuI391Zl+Dw60j7xiYWUczUF3CDIIY2/6yo503QgQDxH
@@ -116,8 +116,8 @@ jwt:
     /qLz+CotVxsATMwu0h57V6zjmiJeWjoRc03EKdGsavyf1wCd5KVzehPt88JRIz4M
     XP2Yv0/8LHuGFMw1Q3VcLh67Jsiy8wm/9PZKXG1W3+NYJhiSLhuEqq/Um/GGtMEv
     pO5YXNL8gZTpSg6hQm67obvS7ahoNXx7wZYuZk2lrfcbj53kyeOYzMcuzDTY
-    -----END RSA PRIVATE KEY-----'
-  public: '-----BEGIN PUBLIC KEY-----
+    -----END RSA PRIVATE KEY-----"
+  public: "-----BEGIN PUBLIC KEY-----
     MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwCQWeuCEEzwhhfjobHlz
     gSguBlN7St9E3amFov7TgEApNQzi7iNRVFB6IVhhLD0fMg+/19vAloJpxF3nRZDy
     fFX2Fa4Vhk6bCYT060/d9nyIt0FOqLpQNPf5F4vUSBEDcRNeUuI391Zl+Dw60j7x
@@ -130,12 +130,12 @@ jwt:
     xYMLVMP9FhUXoY+avx2+XNbgALEk6kYcS43MgPRhGUanI+mJ+34tprQQ1u45lpww
     hL7sp/t34hpz/CsHu4H8qZF3ycIRyBS9BzRDwY0owik1u1uWLT3WaE4QmTagT7Vh
     dO2KwNVD1zoKafebnFRGL0ECAwEAAQ==
-    -----END PUBLIC KEY-----'
-  expireIn: '2 days'
+    -----END PUBLIC KEY-----"
+  expireIn: "2 days"
 redis:
   prefix: auth_ms
   auth_pass: cinnolab@@123
-  host: 192.168.128.200
+  host: dev2.bookoke.com
   port: 6379
   ttl: 5
   cache_duration: 10
