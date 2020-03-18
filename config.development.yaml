@@ -131,6 +131,7 @@ jwt:
     hL7sp/t34hpz/CsHu4H8qZF3ycIRyBS9BzRDwY0owik1u1uWLT3WaE4QmTagT7Vh
     dO2KwNVD1zoKafebnFRGL0ECAwEAAQ==
     -----END PUBLIC KEY-----'
+  expireIn: '2 days'
 redis:
   prefix: auth_ms
   auth_pass: cinnolab@@123

@@ -10,7 +10,7 @@ export class JwtConfig implements JwtOptionsFactory {
     createJwtOptions(): JwtModuleOptions {
         return {
             // secret: this.boot.get('jwt.serect', 'cinnolab'),
-            signOptions: { expiresIn: '60s', algorithm: 'RS256' },
+            signOptions: { expiresIn: this.boot.get('jwt.expireIn'), algorithm: 'RS256' },
             privateKey: this.boot.get('jwt.private'),
             publicKey: this.boot.get('jwt.public'),
             verifyOptions: { algorithms: ['RS256'] },
