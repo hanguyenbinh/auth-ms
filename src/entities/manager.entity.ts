@@ -50,6 +50,9 @@ export class Manager {
     @Column('boolean', { default: false })
     isFacebookAccount: boolean;
 
+    @Column('varchar', { length: 400, nullable: true})
+    changePasswordHash: string;
+
     @Column('boolean', { default: false })
     isBanned: boolean;
 

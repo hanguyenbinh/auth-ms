@@ -31,3 +31,17 @@ export interface ManagerRepositoryResult {
     message: string;
     result: any;
 }
+export interface ManagerChangePasswordInput {
+    id: string;
+    currentPassword: string;
+    newPassword: string;
+}
+
+export interface ManagerRecoveryPasswordInput {
+    email: string;
+}
+
+export interface ManagerRecoveryPasswordConfirmInput {
+    changePasswordHash: string;
+    newPassword: string;
+}

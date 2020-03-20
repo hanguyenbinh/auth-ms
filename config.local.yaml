@@ -1,5 +1,5 @@
 consul:
-  host: dev2.bookoke.com
+  host: 192.168.128.200
   port: 8500
 service:
   discoveryHost: ${{DISCOVERY_HOST}}
@@ -65,6 +65,9 @@ logger:
       # 200M
       maxsize: 209715200
       maxFiles: 10
+confirmation:
+  serect: 'bookoke2020'
+  expiresIn : '24h'
 jwt:
   private: "-----BEGIN RSA PRIVATE KEY-----
     MIIJKQIBAAKCAgEAwCQWeuCEEzwhhfjobHlzgSguBlN7St9E3amFov7TgEApNQzi

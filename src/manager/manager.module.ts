@@ -8,7 +8,7 @@ import { JwtConfig } from '../jwt/jwtConfig.class';
 import { Boot } from '@nestcloud/boot';
 import * as redisStore from 'cache-manager-redis-store';
 import { NEST_BOOT_PROVIDER } from '@nestcloud/common';
-import { ManagerRepository } from 'src/entities/manager.repository';
+import { ManagerRepository } from '../entities/manager.repository';
 import { ManagerService } from './manager.service';
 import { ManagerController } from './manager.controller';
 

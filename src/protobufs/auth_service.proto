@@ -15,12 +15,20 @@ service AuthService {
     rpc managerFacebookLogin(FacebookLoginInput) returns (ManagerLoginResponse){}
     rpc managerCheckToken(CheckTokenInput) returns (ManagerLoginResponse){}
     rpc createEmployee(CreateEmployeeInput) returns (CreateEmployeeResponse){}
+    rpc managerChangePassword(ManagerChangePasswordInput) returns (BasicResponse) {}
+    rpc managerRecoveryPassword(ManagerRecoveryPasswordInput) returns (BasicResponse) {}
+    rpc managerRecoveryPasswordConfirmation(ManagerRecoveryPasswordConfirmInput) returns (BasicResponse) {}
     // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
 }
 
 message Error{
     int32 errorCode = 1;
     string errorMessage = 2;
+}
+
+message BasicResponse {
+    int32 code = 1;
+    string message = 2;
 }
 
 message CheckTokenInput {
@@ -101,4 +109,16 @@ message CreateEmployeeResponse {
   int32 code = 1;
   string message = 2;
   Error error = 3;
+}
+
+message ManagerChangePasswordInput {
+    string id = 1;
+    string currentPassword = 2;
+    string newPassword = 3;
+}
+message ManagerRecoveryPasswordInput {
+    string email = 1;
+}
+message ManagerRecoveryPasswordConfirmInput {
+    string changePasswordHash = 1;
 }

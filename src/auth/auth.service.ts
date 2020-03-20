@@ -7,12 +7,14 @@ import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import * as request from 'request';
 import { InjectBoot, Boot } from '@nestcloud/boot';
-import { GoogleTokenInfo } from 'src/common/interfaces/google.interface';
-import { Manager } from 'src/entities/manager.entity';
-import { FacebookTokenInfo } from 'src/common/interfaces/facebook.interface';
+import { GoogleTokenInfo } from '../common/interfaces/google.interface';
+import { Manager } from '../entities/manager.entity';
+import { FacebookTokenInfo } from '../common/interfaces/facebook.interface';
 import { FacebookLoginInput, CheckTokenInput } from './auth.interface';
+import { ManagerChangePasswordInput, ManagerRecoveryPasswordConfirmInput, ManagerRecoveryPasswordInput } from '../manager/manager.interface';
+import * as jwt from 'jsonwebtoken';
 
-
+import { IsNull } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -99,7 +101,7 @@ export class AuthService {
     }
 
     async validateFacebookLogin(id: string, token: string, name: string): Promise<any> {
-        // validate facebook token        
+        // validate facebook token
         const checkResult: FacebookTokenInfo = await this.checkFacebookToken(id, token);
         if (checkResult.id !== id || checkResult.name !== name) {
             return false;
@@ -160,26 +162,96 @@ export class AuthService {
     }
 
     async managerCheckToken(payload: CheckTokenInput): Promise<any> {
-        try {
-            const user = this.jwtService.verify(payload.accessToken);
-            if (user && user.id) {
-                const result = await this.managerService.find([
-                    { id: user.id },
-                ]);
-                if (result) {
-                    return {
-                        accessToken: payload.accessToken,
-                    };
+        const user = this.jwtService.verify(payload.accessToken);
+        if (user && user.id) {
+            const result = await this.managerService.findOne(
+                {
+                    id: user.id,
+                },
+            );
+            if (result) {
+                return {
+                    accessToken: payload.accessToken,
+                };
 
-                }
             }
-            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN' });
         }
-        catch (error) {
-            console.log(error);
-            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN' });
+        throw new RpcException({ code: 403, message: 'INVALID_APPLICATION_TOKEN' });
+    }
 
+    async managerChangePassword(payload: ManagerChangePasswordInput, accessToken: string): Promise<any> {
+        if (!payload.newPassword) {
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_NEW_PASSWORD_EXIST', result: null });
         }
+        if (!payload.currentPassword) {
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_CURRENT_PASSWORD_EXIST', result: null });
+        }
+        let user: any = null;
+        try {
+            user = this.jwtService.verify(accessToken);
+        } catch (error) {
+            throw new RpcException({ code: 406, message: 'CAN_NOT_VERIFY_ACCESS_TOKEN', result: null });
+        }
+        if (user && user.id) {
+            const manager: Manager = await this.managerService.findOne({ id: user.id, deleteAt: IsNull() });
+            if (manager) {
+                if (!await bcrypt.compare(manager.password, payload.currentPassword)) {
+                    throw new RpcException({ code: 406, message: 'INVALID_PASSWORD' });
+                }
+                manager.password = await bcrypt.hash(
+                    payload.newPassword,
+                    this.boot.get('bcrypt.salt', 12),
+                );
+                const result = this.managerService.save(manager);
+                // send confirmation email here
+                return {
+                    code: 200,
+                    message: 'PASSWORD_CHANGED',
+                };
+            }
+        }
+        throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN' });
+    }
 
+    async managerRecoveryPassword(payload: ManagerRecoveryPasswordInput) {
+        if (!payload.email) {
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_EMAIL_EXIST', result: null });
+        }
+        const manager: Manager = await this.managerService.findOne({ email: payload.email, deleteAt: IsNull() });
+        if (manager) {
+            manager.changePasswordHash = jwt.sign(manager.toJSON(), this.boot.get('confirmation.serect', 'cinnolab'), {expiresIn: this.boot.get('confirmation.expiresIn', '24h')});
+            // send confirmation email here
+            await this.managerService.save(manager);
+            return {
+                code: 200,
+                message: 'RECOVERY_LINK_SENT_BY_EMAIL',
+            };
+        }
+        throw new RpcException({ code: 404, message: 'MANAGER_NOT_FOUND', result: null });
+    }
+
+    async managerRecoveryPasswordConfirmation(payload: ManagerRecoveryPasswordConfirmInput) {
+        if (!payload.newPassword) {
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_NEW_PASSWORD_EXIST', result: null });
+        }
+        const user: any = jwt.verify(payload.changePasswordHash, this.boot.get('confirmation.serect', 'cinnolab'));
+        if (user && user.id) {
+            const manager: Manager = await this.managerService.findOne(
+                {
+                    id: user.id,
+                    changePasswordHash: payload.changePasswordHash,
+                },
+            );
+            if (manager) {
+                manager.password = payload.newPassword;
+                manager.changePasswordHash = '';
+                const result = await this.managerService.save(manager);
+                return {
+                    code: 200,
+                    message: 'PASSWORD_CHANGED',
+                };
+            }
+        }
+        throw new RpcException({ code: 406, message: 'INVALID_CONFIRMATION_TOKEN' });
     }
 }

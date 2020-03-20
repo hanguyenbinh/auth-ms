@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Manager } from '../entities/manager.entity';
-import { ManagerRegisterInput, ManagerRepositoryResult, ManagerGoogleRegisterInput, ManagerFacebookRegisterInput } from './manager.interface';
 import { ManagerRepository } from '../entities/manager.repository';
-import { RpcException } from '@nestjs/microservices';
-
+import { ManagerFacebookRegisterInput, ManagerGoogleRegisterInput, ManagerRegisterInput, ManagerRepositoryResult } from './manager.interface';
 
 @Injectable()
 export class ManagerService {
     constructor(
         @InjectRepository(Manager)
         private readonly managerRepository: ManagerRepository,
+
     ) { }
     async createManager(payload: ManagerRegisterInput): Promise<Manager> {
         if (!(payload.email && payload.phoneNumber)) {
@@ -64,7 +64,7 @@ export class ManagerService {
     async findManagerByEmailOrPhone(email: string): Promise<ManagerRepositoryResult> {
         const manager = await this.managerRepository.findOne({
             where: [
-                { email: email },
+                { email },
                 { phoneNumber: email },
             ],
         });
@@ -87,16 +87,25 @@ export class ManagerService {
 
     async findManagerByFacebookAccount(email: string): Promise<any> {
         const manager = await this.managerRepository.findOne({
-            where: [
-                { email },
-                { isFacebookAccount: true },
-            ],
+            where:
+                {
+                    email,
+                    isFacebookAccount: true,
+                },
         });
         return manager;
     }
-    async find(conditions: any): Promise<any>{
-        const manager = await this.managerRepository.find({where: conditions});
-        console.log('find', manager);
+    async find(conditions: any): Promise<any> {
+        const manager = await this.managerRepository.find({ where: conditions });
         return manager;
+    }
+
+    async findOne(conditions: any): Promise<any> {
+        const manager = await this.managerRepository.findOne({ where: conditions });
+        return manager;
+    }
+
+    async save(manager: Manager): Promise<any> {
+        return this.managerRepository.save(manager);
     }
 }
