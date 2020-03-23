@@ -1,5 +1,5 @@
 consul:
-  host: 192.168.128.200
+  host: 192.168.16.200
   port: 8500
 service:
   discoveryHost: ${{DISCOVERY_HOST}}

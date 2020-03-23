@@ -13,8 +13,12 @@ import { FacebookTokenInfo } from '../common/interfaces/facebook.interface';
 import { FacebookLoginInput, CheckTokenInput } from './auth.interface';
 import { ManagerChangePasswordInput, ManagerRecoveryPasswordConfirmInput, ManagerRecoveryPasswordInput } from '../manager/manager.interface';
 import * as jwt from 'jsonwebtoken';
+import { RpcClient, Service, GrpcClient } from '@nestcloud/grpc';
 
 import { IsNull } from 'typeorm';
+
+import { join } from 'path';
+import { MailerService } from 'src/mailer_ms/mailer_ms.interface';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +30,16 @@ export class AuthService {
         @InjectBoot() private readonly boot: Boot,
     ) {
     }
+    // @RpcClient({
+    //     service: 'MailerService',
+    //     package: 'mailer_ms',
+    //     protoPath: join(__dirname, './protobufs/mailer_ms.proto'),
+    //   }) private readonly client: GrpcClient;
+      @Service('MailerService', {
+        service: 'MailerService',
+        package: 'mailer_ms',
+        protoPath: join(__dirname, '../protobufs/mailer_ms.proto'),
+      }) private mailerService: MailerService;
 
     async validateManager(userName: string, password: string): Promise<any> {
         const { code, message, result } = await this.managerService.findManagerByEmailOrPhone(userName);
@@ -49,7 +63,7 @@ export class AuthService {
 
     async checkGoogleToken(token: string): Promise<GoogleTokenInfo> {
         return new Promise((resolve, reject) => {
-            let options: any = {
+            const options: any = {
                 url: `${this.boot.get('google.checkTokenUrl', 'https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=')}${token}`,
                 headers: {
                     'User-Agent': 'bookeoke-auth-service',
@@ -70,7 +84,7 @@ export class AuthService {
         const url = this.boot.get('facebook.checkTokenUrl', 'https://graph.facebook.com/${id}/?access_token=${token}').replace('${id}', id).replace('${token}', token);
         console.log(url);
         return new Promise((resolve, reject) => {
-            let options: any = {
+            const options: any = {
                 url: this.boot.get('facebook.checkTokenUrl', 'https://graph.facebook.com/${id}/?access_token=${token}').replace('${id}', id).replace('${token}', token),
                 headers: {
                     'User-Agent': 'bookeoke-auth-service',
@@ -222,12 +236,37 @@ export class AuthService {
             manager.changePasswordHash = jwt.sign(manager.toJSON(), this.boot.get('confirmation.serect', 'cinnolab'), {expiresIn: this.boot.get('confirmation.expiresIn', '24h')});
             // send confirmation email here
             await this.managerService.save(manager);
+            const result = await this.mailerService.createSendMailJob({
+                destination: manager.email,
+                templateId: 'asfasfssadfsfsaf',
+                values: ['fsfasfdfasfdf'],
+            }).toPromise();
+            console.log(result);
             return {
                 code: 200,
                 message: 'RECOVERY_LINK_SENT_BY_EMAIL',
             };
         }
         throw new RpcException({ code: 404, message: 'MANAGER_NOT_FOUND', result: null });
+    }
+
+    async checkRecoveryPasswordHash(payload: string) {
+        const user: any = jwt.verify(payload, this.boot.get('confirmation.serect', 'cinnolab'));
+        if (user && user.id) {
+            const manager: Manager = await this.managerService.findOne(
+                {
+                    id: user.id,
+                    changePasswordHash: payload,
+                },
+            );
+            if (manager) {
+                return {
+                    code: 200,
+                    message: 'RECOVERY_TOKEN_CORRECT',
+                };
+            }
+        }
+        throw new RpcException({ code: 406, message: 'INVALID_RECOVERY_TOKEN' });
     }
 
     async managerRecoveryPasswordConfirmation(payload: ManagerRecoveryPasswordConfirmInput) {
@@ -243,7 +282,10 @@ export class AuthService {
                 },
             );
             if (manager) {
-                manager.password = payload.newPassword;
+                manager.password = await bcrypt.hash(
+                    payload.newPassword,
+                    this.boot.get('bcrypt.salt', 12),
+                );
                 manager.changePasswordHash = '';
                 const result = await this.managerService.save(manager);
                 return {

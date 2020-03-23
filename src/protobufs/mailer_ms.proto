@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package mailer_ms;
+
+service MailerService{
+    rpc CreateSendMailJob(CreateJobInput) returns (CreateJobResponse){}
+}
+message CreateJobInput{    
+    string destination = 2;
+    string templateId = 3;
+    repeated string values = 4;
+}
+message EnvelopeObject {
+    string from = 1;
+    string to = 2;
+}
+message CreateJobResponse{
+    repeated string accepted = 1;
+    repeated string rejected = 2;
+    int32 envelopeTime = 3;
+    int32 messageTime = 4;
+    int32 messageSize = 5;
+    string response = 6;
+    EnvelopeObject envelope = 7;
+    string messageId = 8;
+}
+
+message MailerError {
+    int32 code = 1;
+    string message = 2;
+}

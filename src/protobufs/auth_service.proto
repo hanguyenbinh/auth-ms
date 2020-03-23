@@ -18,6 +18,7 @@ service AuthService {
     rpc managerChangePassword(ManagerChangePasswordInput) returns (BasicResponse) {}
     rpc managerRecoveryPassword(ManagerRecoveryPasswordInput) returns (BasicResponse) {}
     rpc managerRecoveryPasswordConfirmation(ManagerRecoveryPasswordConfirmInput) returns (BasicResponse) {}
+    rpc checkRecoveryPasswordHash(CheckRecoveryPasswordHashInput) returns (BasicResponse) {}
     // rpc deleteEmployee(DeleteEmployeeInput) returns (DeleteEmployeeResponse){}    
 }
 
@@ -121,4 +122,9 @@ message ManagerRecoveryPasswordInput {
 }
 message ManagerRecoveryPasswordConfirmInput {
     string changePasswordHash = 1;
+    string newPassword = 2;
+}
+
+message CheckRecoveryPasswordHashInput {
+  string token = 1;
 }

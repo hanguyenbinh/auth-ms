@@ -73,7 +73,6 @@ export class Manager {
     public deletedBy: string | undefined;
 
     @BeforeInsert()
-    @BeforeUpdate()
     async hashPassword() {
         this.password = await bcrypt.hash(
             this.password,

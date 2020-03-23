@@ -26,3 +26,7 @@ export interface FacebookLoginInput {
 export interface CheckTokenInput {
     accessToken: string;
 }
+
+export interface CheckRecoveryPasswordHashInput {
+    token: string;
+}
