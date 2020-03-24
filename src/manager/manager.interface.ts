@@ -39,6 +39,7 @@ export interface ManagerChangePasswordInput {
 
 export interface ManagerRecoveryPasswordInput {
     email: string;
+    recoveryUrl: string;
 }
 
 export interface ManagerRecoveryPasswordConfirmInput {

@@ -18,7 +18,7 @@ import { RpcClient, Service, GrpcClient } from '@nestcloud/grpc';
 import { IsNull } from 'typeorm';
 
 import { join } from 'path';
-import { MailerService } from 'src/mailer_ms/mailer_ms.interface';
+import { MailerService, CreateJobResponse } from 'src/mailer_ms/mailer_ms.interface';
 
 @Injectable()
 export class AuthService {
@@ -35,11 +35,11 @@ export class AuthService {
     //     package: 'mailer_ms',
     //     protoPath: join(__dirname, './protobufs/mailer_ms.proto'),
     //   }) private readonly client: GrpcClient;
-      @Service('MailerService', {
+    @Service('MailerService', {
         service: 'MailerService',
         package: 'mailer_ms',
         protoPath: join(__dirname, '../protobufs/mailer_ms.proto'),
-      }) private mailerService: MailerService;
+    }) private mailerService: MailerService;
 
     async validateManager(userName: string, password: string): Promise<any> {
         const { code, message, result } = await this.managerService.findManagerByEmailOrPhone(userName);
@@ -176,7 +176,13 @@ export class AuthService {
     }
 
     async managerCheckToken(payload: CheckTokenInput): Promise<any> {
-        const user = this.jwtService.verify(payload.accessToken);
+        let user: any = null;
+        try {
+            user = this.jwtService.verify(payload.accessToken);
+        } catch (error) {
+            console.log(error)
+            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN_FORMAT', result: null });
+        }
         if (user && user.id) {
             const result = await this.managerService.findOne(
                 {
@@ -202,14 +208,19 @@ export class AuthService {
         }
         let user: any = null;
         try {
+            console.log("managerChangePassword service", accessToken)
             user = this.jwtService.verify(accessToken);
         } catch (error) {
-            throw new RpcException({ code: 406, message: 'CAN_NOT_VERIFY_ACCESS_TOKEN', result: null });
+            console.log(error)
+            throw new RpcException({ code: 406, message: 'INVALID_APPLICATION_TOKEN_FORMAT', result: null });
         }
         if (user && user.id) {
+
             const manager: Manager = await this.managerService.findOne({ id: user.id, deleteAt: IsNull() });
             if (manager) {
-                if (!await bcrypt.compare(manager.password, payload.currentPassword)) {
+                console.log(manager)
+                console.log(payload)
+                if (!await bcrypt.compare(payload.currentPassword, manager.password)) {
                     throw new RpcException({ code: 406, message: 'INVALID_PASSWORD' });
                 }
                 manager.password = await bcrypt.hash(
@@ -231,27 +242,45 @@ export class AuthService {
         if (!payload.email) {
             throw new RpcException({ code: 406, message: 'MAKE_SURE_EMAIL_EXIST', result: null });
         }
+        if (!payload.recoveryUrl) {
+            throw new RpcException({ code: 406, message: 'MAKE_SURE_RECOVERY_URL_EXIST', result: null });
+        }
         const manager: Manager = await this.managerService.findOne({ email: payload.email, deleteAt: IsNull() });
         if (manager) {
-            manager.changePasswordHash = jwt.sign(manager.toJSON(), this.boot.get('confirmation.serect', 'cinnolab'), {expiresIn: this.boot.get('confirmation.expiresIn', '24h')});
+            manager.changePasswordHash = jwt.sign(manager.toJSON(), this.boot.get('confirmation.serect', 'cinnolab'), { expiresIn: this.boot.get('confirmation.expiresIn', '24h') });
+
             // send confirmation email here
             await this.managerService.save(manager);
-            const result = await this.mailerService.createSendMailJob({
+            const result: CreateJobResponse = await this.mailerService.createSendMailJob({
                 destination: manager.email,
-                templateId: 'asfasfssadfsfsaf',
+                subject: 'Password recovery email',
+                text: payload.recoveryUrl + manager.changePasswordHash,
                 values: ['fsfasfdfasfdf'],
             }).toPromise();
-            console.log(result);
-            return {
-                code: 200,
-                message: 'RECOVERY_LINK_SENT_BY_EMAIL',
-            };
+            if (result.accepted && result.accepted.length > 0) {
+                return {
+                    code: 200,
+                    message: 'RECOVERY_LINK_SENT_BY_EMAIL',
+                };
+
+            }
+            else {
+                throw new RpcException({ code: 422, message: 'CAN_NOT_SEND_CONFIRMATION_EMAIL' });
+            }
         }
         throw new RpcException({ code: 404, message: 'MANAGER_NOT_FOUND', result: null });
     }
 
     async checkRecoveryPasswordHash(payload: string) {
-        const user: any = jwt.verify(payload, this.boot.get('confirmation.serect', 'cinnolab'));
+        let user: any = null;
+        try {
+            user = jwt.verify(payload, this.boot.get('confirmation.serect', 'cinnolab'));
+        }
+        catch (error) {
+            console.log(error);
+            throw new RpcException({ code: 406, message: 'INVALID_RECOVERY_TOKEN_FORMAT', result: null });
+        }
+
         if (user && user.id) {
             const manager: Manager = await this.managerService.findOne(
                 {
@@ -273,7 +302,15 @@ export class AuthService {
         if (!payload.newPassword) {
             throw new RpcException({ code: 406, message: 'MAKE_SURE_NEW_PASSWORD_EXIST', result: null });
         }
-        const user: any = jwt.verify(payload.changePasswordHash, this.boot.get('confirmation.serect', 'cinnolab'));
+        let user: any = null;
+        try {
+            user = jwt.verify(payload.changePasswordHash, this.boot.get('confirmation.serect', 'cinnolab'));
+        }
+        catch (error) {
+            console.log(error);
+            throw new RpcException({ code: 406, message: 'INVALID_CONFIRMATION_TOKEN_FORMAT', result: null });
+        }
+
         if (user && user.id) {
             const manager: Manager = await this.managerService.findOne(
                 {
@@ -287,7 +324,14 @@ export class AuthService {
                     this.boot.get('bcrypt.salt', 12),
                 );
                 manager.changePasswordHash = '';
-                const result = await this.managerService.save(manager);
+                try {
+                    const result = await this.managerService.save(manager);
+                    console.log('managerRecoveryPasswordConfirmation', result);
+                } catch (error) {
+                    console.log(error);
+                    throw new RpcException({ code: 500, message: 'DATABASE_ERROR' });
+                }
+
                 return {
                     code: 200,
                     message: 'PASSWORD_CHANGED',

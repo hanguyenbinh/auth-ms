@@ -132,10 +132,10 @@ jwt:
     dO2KwNVD1zoKafebnFRGL0ECAwEAAQ==
     -----END PUBLIC KEY-----"
   expireIn: "2 days"
-redis:
-  prefix: auth_ms
-  auth_pass: cinnolab@@123
-  host: ${{REDIS_HOST}}
-  port: 6379
-  ttl: 5
-  cache_duration: 10
+# redis:
+#   prefix: auth_ms
+#   auth_pass: cinnolab@@123
+#   host: ${{REDIS_HOST}}
+#   port: 6379
+#   ttl: 5
+#   cache_duration: 10

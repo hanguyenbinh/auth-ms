@@ -30,3 +30,8 @@ export interface CheckTokenInput {
 export interface CheckRecoveryPasswordHashInput {
     token: string;
 }
+
+export interface BasicResponse {
+    code: number;
+    message: string;
+}

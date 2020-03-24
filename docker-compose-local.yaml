@@ -8,7 +8,7 @@ services:
             - 50050:50050
         environment:
             NODE_ENV: local
-            DISCOVERY_HOST: 192.168.16.200
+            DISCOVERY_HOST: 192.168.89.4
             DATABASE_HOST: auth_ms_postgresql
             REDIS_HOST: auth_ms_redis
         networks:

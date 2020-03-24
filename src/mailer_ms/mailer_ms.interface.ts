@@ -6,9 +6,11 @@ export interface MailerService {
 
 export interface CreateJobInput {
   destination: string;
-  templateId: string;
+  subject: string;
+  text: string;
   values: string[];
 }
+
 
 export interface MailerError {
   code: number;

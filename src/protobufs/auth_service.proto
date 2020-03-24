@@ -119,6 +119,7 @@ message ManagerChangePasswordInput {
 }
 message ManagerRecoveryPasswordInput {
     string email = 1;
+    string recoveryUrl = 2;
 }
 message ManagerRecoveryPasswordConfirmInput {
     string changePasswordHash = 1;

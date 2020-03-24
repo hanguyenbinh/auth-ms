@@ -1,7 +1,7 @@
 import { Controller, Inject } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GrpcMethod, RpcException } from '@nestjs/microservices';
-import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput, CheckTokenInput, CheckRecoveryPasswordHashInput } from './auth.interface';
+import { ManagerLoginInput, ManagerLoginResponse, GoogleLoginInput, FacebookLoginInput, CheckTokenInput, CheckRecoveryPasswordHashInput, BasicResponse } from './auth.interface';
 import { ManagerChangePasswordInput, ManagerRecoveryPasswordConfirmInput, ManagerRecoveryPasswordInput } from '../manager/manager.interface';
 import { Metadata } from 'grpc';
 
@@ -31,13 +31,14 @@ export class AuthController {
     }
 
     @GrpcMethod('AuthService', 'managerChangePassword')
-    async managerChangePassword(payload: ManagerChangePasswordInput, metaData: Metadata): Promise<any> {
+    async managerChangePassword(payload: ManagerChangePasswordInput, metaData: Metadata): Promise<BasicResponse> {
+
         const metaObject: any = metaData.getMap();
-        return await this.authService.managerChangePassword(payload, metaObject.accessToken);
+        return await this.authService.managerChangePassword(payload, metaObject.authorization);
     }
 
     @GrpcMethod('AuthService', 'managerRecoveryPassword')
-    async managerRecoveryPassword(payload: ManagerRecoveryPasswordInput): Promise<any> {
+    async managerRecoveryPassword(payload: ManagerRecoveryPasswordInput): Promise<BasicResponse> {
         return await this.authService.managerRecoveryPassword(payload);
     }
 
