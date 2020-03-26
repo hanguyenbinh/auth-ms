@@ -8,8 +8,7 @@ service MailerService{
 message CreateJobInput{    
     string destination = 1;
     string subject = 2;
-    string text = 3;
-    repeated string values = 4;
+    string html = 3;    
 }
 message EnvelopeObject {
     string from = 1;

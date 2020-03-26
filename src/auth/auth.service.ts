@@ -1,7 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ManagerService } from '../manager/manager.service';
-import { UserService } from '../user/user.service';
-import { EmployeeService } from '../employee/employee.service';
 import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
@@ -13,28 +11,22 @@ import { FacebookTokenInfo } from '../common/interfaces/facebook.interface';
 import { FacebookLoginInput, CheckTokenInput } from './auth.interface';
 import { ManagerChangePasswordInput, ManagerRecoveryPasswordConfirmInput, ManagerRecoveryPasswordInput } from '../manager/manager.interface';
 import * as jwt from 'jsonwebtoken';
-import { RpcClient, Service, GrpcClient } from '@nestcloud/grpc';
-
+import { Service } from '@nestcloud/grpc';
 import { IsNull } from 'typeorm';
-
-import { join } from 'path';
 import { MailerService, CreateJobResponse } from 'src/mailer_ms/mailer_ms.interface';
+import { join, resolve } from 'path';
+import * as handlebars from 'handlebars';
+import * as fs from 'fs';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly managerService: ManagerService,
-        private readonly userService: UserService,
-        private readonly employeeService: EmployeeService,
         private readonly jwtService: JwtService,
         @InjectBoot() private readonly boot: Boot,
     ) {
     }
-    // @RpcClient({
-    //     service: 'MailerService',
-    //     package: 'mailer_ms',
-    //     protoPath: join(__dirname, './protobufs/mailer_ms.proto'),
-    //   }) private readonly client: GrpcClient;
+
     @Service('MailerService', {
         service: 'MailerService',
         package: 'mailer_ms',
@@ -251,11 +243,18 @@ export class AuthService {
 
             // send confirmation email here
             await this.managerService.save(manager);
+            const templateSource = fs.readFileSync(resolve(__dirname, '/../', 'email_template/forgot_password.hbs'), 'utf8');
+            const template = Handlebars.compile(templateSource);
+            const templateValue = {
+                name: manager.companyName || manager.email,
+                email_address: manager.email,
+                url: payload.recoveryUrl + manager.changePasswordHash,
+            }
+
             const result: CreateJobResponse = await this.mailerService.createSendMailJob({
                 destination: manager.email,
-                subject: 'Password recovery email',
-                text: payload.recoveryUrl + manager.changePasswordHash,
-                values: ['fsfasfdfasfdf'],
+                subject: this.boot.get('nodemailer.forgot_password_email_subject', 'password recovery email'),
+                html: template(templateValue),
             }).toPromise();
             if (result.accepted && result.accepted.length > 0) {
                 return {

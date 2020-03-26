@@ -7,8 +7,7 @@ export interface MailerService {
 export interface CreateJobInput {
   destination: string;
   subject: string;
-  text: string;
-  values: string[];
+  html: string;
 }
 
 
