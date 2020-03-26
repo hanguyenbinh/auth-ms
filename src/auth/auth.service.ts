@@ -243,7 +243,7 @@ export class AuthService {
 
             // send confirmation email here
             await this.managerService.save(manager);
-            const templateSource = fs.readFileSync(join(__dirname, '/../email_template/forgot_password.hbs'), 'utf8');
+            const templateSource = fs.readFileSync(join(__dirname, '/../../email_template/forgot_password.hbs'), 'utf8');
             const template = handlebars.compile(templateSource);
             const templateValue = {
                 name: manager.companyName || manager.email,
