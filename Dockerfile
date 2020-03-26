@@ -26,6 +26,7 @@ WORKDIR /home/node
 COPY --from=builder /home/node/config.*.yaml /home/node/
 COPY --from=builder /home/node/package*.json /home/node/
 COPY --from=builder /home/node/dist/ /home/node/dist/
+COPY --from=builder /home/node/email_template/ /home/node/email_template/
 
 RUN npm ci
 
