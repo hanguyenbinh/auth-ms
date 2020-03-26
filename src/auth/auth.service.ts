@@ -14,7 +14,7 @@ import * as jwt from 'jsonwebtoken';
 import { Service } from '@nestcloud/grpc';
 import { IsNull } from 'typeorm';
 import { MailerService, CreateJobResponse } from 'src/mailer_ms/mailer_ms.interface';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 
@@ -243,8 +243,8 @@ export class AuthService {
 
             // send confirmation email here
             await this.managerService.save(manager);
-            const templateSource = fs.readFileSync(resolve(__dirname, '/../', 'email_template/forgot_password.hbs'), 'utf8');
-            const template = Handlebars.compile(templateSource);
+            const templateSource = fs.readFileSync(join(__dirname, '/../email_template/forgot_password.hbs'), 'utf8');
+            const template = handlebars.compile(templateSource);
             const templateValue = {
                 name: manager.companyName || manager.email,
                 email_address: manager.email,
