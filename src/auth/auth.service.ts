@@ -246,7 +246,6 @@ export class AuthService {
             const templateSource = fs.readFileSync(join(__dirname, '/../../email_template/forgot_password.hbs'), 'utf8');
             const template = handlebars.compile(templateSource);
             const templateValue = {
-                name: manager.companyName || manager.email,
                 email_address: manager.email,
                 url: payload.recoveryUrl + manager.changePasswordHash,
             }
