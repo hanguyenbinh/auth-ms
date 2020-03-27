@@ -20,7 +20,9 @@ database:
   user: postgres
   password: postgres
   database: auth_ms
-  synchronize: true
+  maxQueryExecutionTime: 1000
+  synchronize: false
+  migrationsRun: true
 bcrypt:
   salt: 12
 google:

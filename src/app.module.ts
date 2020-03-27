@@ -18,6 +18,7 @@ import * as Config from './config';
 import { NEST_BOOT, NEST_CONSUL, NEST_BOOT_PROVIDER } from '@nestcloud/common';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
+import { join } from 'path';
 
 
 
@@ -55,9 +56,16 @@ const getTerminusOptions = (
         password: config.get('database.password', 'postgres'),
         database: config.get('database.database', 'auth_ms'),
         entities: [__dirname + '/entities/*.entity{.ts,.js}'],
-        synchronize: config.get('database.synchronize', true),
+        synchronize: config.get('database.synchronize', false),
+        migrationsRun: config.get('database.migrationsRun', true),
+        migrations: [join(__dirname, '/../migrations/**/*{.ts,.js}')],
+        cli: {
+          // Location of migration should be inside src folder
+          // to be compiled into dist/ folder.
+          migrationsDir: 'src/migrations',
+        },
         maxQueryExecutionTime: config.get(
-          'dataSource.maxQueryExecutionTime',
+          'database.maxQueryExecutionTime',
           1000,
         ),
         logging: 'all'

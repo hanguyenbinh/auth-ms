@@ -17,7 +17,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/orm.config.ts",
+    "typeorm:migrate": "npm run typeorm migration:generate -- -n",
+    "typeorm:run": "npm run typeorm migration:run"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.3.1",
@@ -48,7 +51,8 @@
     "pg": "^7.17.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
-    "rxjs": "^6.5.3"
+    "rxjs": "^6.5.3",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^6.9.0",
