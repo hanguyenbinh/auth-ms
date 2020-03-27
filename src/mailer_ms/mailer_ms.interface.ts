@@ -8,6 +8,8 @@ export interface CreateJobInput {
   destination: string;
   subject: string;
   html: string;
+  logo: string;
+  fileName: string;
 }
 
 

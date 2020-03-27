@@ -248,12 +248,15 @@ export class AuthService {
             const templateValue = {
                 email_address: manager.email,
                 url: payload.recoveryUrl + manager.changePasswordHash,
+                logo: 'logo.png'
             }
 
             const result: CreateJobResponse = await this.mailerService.createSendMailJob({
                 destination: manager.email,
                 subject: this.boot.get('nodemailer.forgot_password_email_subject', 'password recovery email'),
                 html: template(templateValue),
+                logo: this.boot.get('nodemailer.logo', ''),
+                fileName: 'logo.png',
             }).toPromise();
             if (result.accepted && result.accepted.length > 0) {
                 return {
