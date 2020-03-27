@@ -10,6 +10,7 @@ export interface CreateJobInput {
   html: string;
   logo: string;
   fileName: string;
+  cid: string;
 }
 
 

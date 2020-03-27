@@ -11,6 +11,7 @@ message CreateJobInput{
     string html = 3;    
     string logo = 4;
     string fileName = 5;
+    string cid = 6;
 }
 message EnvelopeObject {
     string from = 1;

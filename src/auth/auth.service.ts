@@ -248,7 +248,7 @@ export class AuthService {
             const templateValue = {
                 email_address: manager.email,
                 url: payload.recoveryUrl + manager.changePasswordHash,
-                logo: 'logo.png'
+                logo: 'cid:logo@bookoke.com'
             }
 
             const result: CreateJobResponse = await this.mailerService.createSendMailJob({
@@ -257,6 +257,7 @@ export class AuthService {
                 html: template(templateValue),
                 logo: this.boot.get('nodemailer.logo', ''),
                 fileName: 'logo.png',
+                cid: 'logo@bookoke.com',
             }).toPromise();
             if (result.accepted && result.accepted.length > 0) {
                 return {
